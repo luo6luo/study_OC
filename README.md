@@ -7,5 +7,5 @@
 ### 笔记目录
 
 #### 1、Block
-- [block本质](./block1/block1/main.cpp)。
-- [block简单捕获](./block1/block1/main.cpp)。
+- [block本质](./block/block1/block1/main.cpp)。
+- [block简单捕获](./block/block2/block2/main.cpp)。
