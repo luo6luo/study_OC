@@ -27,7 +27,7 @@
 		CBB1D738283BA553009E0D0F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CBB1D741283BA9EF009E0D0F /* main_auto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_auto.cpp; sourceTree = "<group>"; };
 		CBB1D758283F2DBE009E0D0F /* main_static.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_static.cpp; sourceTree = "<group>"; };
-		CBDAA61428406A0F002BEF65 /* main_global.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_global.cpp; path = ../../../../block3/block3/main_global.cpp; sourceTree = "<group>"; };
+		CBDAA6162840AFE5002BEF65 /* main_global.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_global.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +63,7 @@
 				CBB1D738283BA553009E0D0F /* main.m */,
 				CBB1D741283BA9EF009E0D0F /* main_auto.cpp */,
 				CBB1D758283F2DBE009E0D0F /* main_static.cpp */,
-				CBDAA61428406A0F002BEF65 /* main_global.cpp */,
+				CBDAA6162840AFE5002BEF65 /* main_global.cpp */,
 			);
 			path = block2;
 			sourceTree = "<group>";
