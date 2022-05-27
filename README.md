@@ -8,4 +8,4 @@
 
 #### 1、Block
 - [block本质](./block/block1/block1)。
-- [block简单捕获](./block/block2/block2)。
+- [block局部变量auto捕获](./block/block2/block2)。
