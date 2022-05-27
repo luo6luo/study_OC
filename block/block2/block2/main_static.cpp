@@ -59,7 +59,12 @@ __OBJC_RW_DLLIMPORT int __CFConstantStringClassReference[];
 #endif
 #ifndef BLOCK_IMPL
 #define BLOCK_IMPL
-
+struct __block_impl {
+  void *isa;
+  int Flags;
+  int Reserved;
+  void *FuncPtr;
+};
 // Runtime copy/destroy helper functions (from Block_private.h)
 #ifdef __OBJC_EXPORT_BLOCKS
 extern "C" __declspec(dllexport) void _Block_object_assign(void *, const void *, const int);
@@ -101,7 +106,7 @@ struct __AtAutoreleasePool {
 };
 
 #define __OFFSETOFIVAR__(TYPE, MEMBER) ((long long) &((TYPE *)0)->MEMBER)
-static __NSConstantStringImpl __NSConstantStringImpl__var_folders_96_0vbtlxxx6nd01n2n42jqy4xc0000gn_T_main_5be7cb_mi_0 __attribute__ ((section ("__DATA, __cfstring"))) = {__CFConstantStringClassReference,0x000007c8,"age - %d",8};
+static __NSConstantStringImpl __NSConstantStringImpl__var_folders_96_0vbtlxxx6nd01n2n42jqy4xc0000gn_T_main_917300_mi_0 __attribute__ ((section ("__DATA, __cfstring"))) = {__CFConstantStringClassReference,0x000007c8,"age: %d",7};
 typedef signed char __int8_t;
 typedef unsigned char __uint8_t;
 typedef short __int16_t;
@@ -22838,94 +22843,84 @@ struct NSUUID_IMPL {
 
 #pragma clang assume_nonnull end
 
-# pragma mark - main.m转换过来的代码
+#pragma mark - main.m转换过来的代码
 
-struct __block_impl {
-  void *isa;
-  int Flags;
-  int Reserved;
-  void *FuncPtr;
-};
-
-/// block的结构体
+/// block结构体
 struct __main_block_impl_0 {
   struct __block_impl impl;
   struct __main_block_desc_0* Desc;
-  int age;
+  int *age; // 地址捕获，存储的是一个地址
     
-  /**
-   构造函数
-   传入三个参数:
-   fp - 逻辑代码
-   desc - block大小描述
-   _age - 传入的外部变量
-   
-   ”age(_age)“代码说明：
-   此语法是c++的语法，表示将_age赋值给age，相当于age = _age;
-   
-   外部变量被保存在block结构体的age变量中
-   */
-  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _age, int flags=0) : age(_age) {
+  // 构造函数
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int *_age, int flags=0) : age(_age) {
     impl.isa = &_NSConcreteStackBlock;
     impl.Flags = flags;
-    impl.FuncPtr = fp;
-    Desc = desc;
+    impl.FuncPtr = fp; // 逻辑代码函数
+    Desc = desc; // 描述内容
+      // age(_age)相当于
 //    age = _age;
   }
 };
 
-/// block内部执行的逻辑代码
+/// 逻辑代码函数
 ///
-/// __cself: 是block本身
+/// __cself: block自己
 static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
-  // 根据指针去取block结构体中存储的age成员
-  // 获取的是传入进去，保存在block结构体中的age，已经不是外部变量age了
-  int age = __cself->age; // bound by copy
-
-            // 将捕获的age打印出来
-            NSLog((NSString *)&__NSConstantStringImpl__var_folders_96_0vbtlxxx6nd01n2n42jqy4xc0000gn_T_main_5be7cb_mi_0, age);
+    
+  // 获取block内部存储的地址
+  int *age = __cself->age; // bound by copy
+            
+            // *age，通过地址去取对应内存中的值
+            NSLog((NSString *)&__NSConstantStringImpl__var_folders_96_0vbtlxxx6nd01n2n42jqy4xc0000gn_T_main_917300_mi_0, (*age));
         }
 
-/// block描述文件
+/// 描述内容
 static struct __main_block_desc_0 {
   size_t reserved;
   size_t Block_size;
 } __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
 
-/// main.m函数转换过来的代码
+/// main.m代码
 int main(int argc, const char * argv[]) {
     /* @autoreleasepool */ { __AtAutoreleasePool __autoreleasepool; 
-        int age = 10;
+        static int age = 10;
         
         /**
          简化代码：
          void (*block)(void) = &__main_block_impl_0(
                                                     __main_block_func_0,
                                                     &__main_block_desc_0_DATA,
-                                                    age
+                                                    &age
                                                    );
          
-         相比block1代码，多个一个 age 参数
-         
-         执行顺序：
-         1、将逻辑代码、block大小、捕获的外部变量age值传入block结构体，此时捕获的age = 10
-         2、block结构体中，将逻辑代码赋给FuncPtr指针，将描述赋给成员Desc，将10赋值给成员age
+         执行说明：
+         1、将代码块，描述内容，age(静态局部变量，类型static)的内存地址传入__main_block_impl_0构造函数中
+         2、构造函数中有一个成员变量age接收传入(静态局部变量)的内存地址，age = _age
+         3、此时结构体成员 int *age 这个内存地址对应的内存中，存储的值还是10
          */
-        void (*block)(void) = ((void (*)())&__main_block_impl_0((void *)__main_block_func_0, &__main_block_desc_0_DATA, age));
+        void (*block)(void) = ((void (*)())&__main_block_impl_0((void *)__main_block_func_0, &__main_block_desc_0_DATA, &age));
         
+        // 重新给age赋值
         age = 20;
         
         /**
-         代码简化：
+         简化代码：
          block->FuncPtr(block);
          
          执行说明：
-         1、将block自己传入 __main_block_func_0 结构体生成的对象中
-         2、根据传入的block自己，去取block中存储的age，此时的age值是当初构建block结构体时候传入进去的，是10，
-            然后打印出来
+         1、block调用__main_block_func_0函数，并传入自己(__cself)
+         2、通过__cself调用存储在结构体中的age(一个内存地址)
+         3、通过内存地址去调用age的值，此时age的值已经变为20，打印出来20
          */
         ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
+        
+        /**
+         总结：block对静态局部变量(static)是 - 地址捕获
+         问题：为什么对静态局部变量是地址捕获？
+         原因：静态变量是存储在全局区，全局区内存是要程序结束是，系统释放，所以是一直存在的，就算作用的函数已经结束，但是变量本身并没有被释放。运行block()，再次调用age时，它还在，所以只需要地址捕获，不需要值捕获。
+         */
     }
     return 0;
 }
+
 static struct IMAGE_INFO { unsigned version; unsigned flag; } _OBJC_IMAGE_INFO = { 0, 2 };
