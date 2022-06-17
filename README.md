@@ -7,5 +7,6 @@
 ### 笔记目录
 
 #### 1、Block
-- [block本质](./block/block1/block1)。
-- [block变量捕获](./block/block2/block2)。
+- [block本质](./block/block1/block1)
+- [block变量捕获](./block/block2/block2)
+- [block的类型](./block/block3/block3)
