@@ -68,7 +68,7 @@ void test2(void) {
     } class]);
 }
 
-#pragma mark - 三种block的出现情景
+# pragma mark - 三种block的出现情景
 
 int count = 5;
 void (^stackBlock2)(void);
