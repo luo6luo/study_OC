@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CB129E39285C917B0058789A /* DZRTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB129E38285C917B0058789A /* DZRTest.m */; };
 		CBB1D750283E3669009E0D0F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB1D74F283E3669009E0D0F /* main.m */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CB129E37285C917B0058789A /* DZRTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DZRTest.h; sourceTree = "<group>"; };
+		CB129E38285C917B0058789A /* DZRTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DZRTest.m; sourceTree = "<group>"; };
 		CBB1D74C283E3669009E0D0F /* block3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = block3; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBB1D74F283E3669009E0D0F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				CBB1D74F283E3669009E0D0F /* main.m */,
+				CB129E37285C917B0058789A /* DZRTest.h */,
+				CB129E38285C917B0058789A /* DZRTest.m */,
 			);
 			path = block3;
 			sourceTree = "<group>";
@@ -119,6 +124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB129E39285C917B0058789A /* DZRTest.m in Sources */,
 				CBB1D750283E3669009E0D0F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DZRTest.h"
 
 # pragma mark - block的父类
 
@@ -164,6 +165,35 @@ void test3(void) {
     
 }
 
+# pragma mark - 查询所属内存区域
+
+int aa = 10;
+void test4(void) {
+    int bb = 20;
+    NSString *str = @"123";
+   
+    NSLog(@"全局区：%p", &aa);
+    NSLog(@"常量区：%p", str);
+    NSLog(@"栈区：%p", &bb);
+    NSLog(@"堆区：%p", [[NSObject alloc] init]);
+    NSLog(@"NSObject %p", [NSObject class]);
+    NSLog(@"DZRTest %p", [DZRTest class]);
+    
+    /**
+     输出结果：
+     全局区：0x100008138
+     常量区：0x100004298
+     栈区：0x7ff7bfeff32c
+     堆区：0x1041aa920
+     NSObject 0x7ff852880030
+     DZRTest 0x100008100
+     
+     可以看出
+     NSObject类存储在栈区
+     DZRTest类存储在数据段
+     */
+}
+
 // block的类型
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -176,6 +206,9 @@ int main(int argc, const char * argv[]) {
         
         // 哪种情况生成以上三种block
         test3();
+        
+        // 扩展补充知识
+        test4();
     }
     return 0;
 }
