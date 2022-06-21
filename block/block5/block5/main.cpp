@@ -22908,6 +22908,7 @@ static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
 /// 划重点：此处的描述文件，和以前相比，多了两个内容：
 /// copy函数，对应__main_block_copy_0函数
 /// dispose函数，对应__main_block_dispose_0函数
+/// 如果访问的是对象类型，则会多出这两个函数，为了就是内存管理
 static struct __main_block_desc_0 {
   size_t reserved;
   size_t Block_size;
