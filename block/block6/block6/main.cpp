@@ -22887,20 +22887,6 @@ struct __Block_byref_person_0 {
   DZRPerson *person;
 };
 
-/// copy函数
-/// 当block从栈区copy到堆区时，_Block_object_assign函数会对person进行类似retain操作
-static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {
-    _Block_object_assign((void*)&dst->person, (void*)src->person, 8/*BLOCK_FIELD_IS_BYREF*/);
-    _Block_object_assign((void*)&dst->age, (void*)src->age, 8/*BLOCK_FIELD_IS_BYREF*/);
-}
-
-/// dispose函数
-/// 当block从堆区移除时，_Block_object_dispose函数会对person进行类似release操作
-static void __main_block_dispose_0(struct __main_block_impl_0*src) {
-    _Block_object_dispose((void*)src->person, 8/*BLOCK_FIELD_IS_BYREF*/);
-    _Block_object_dispose((void*)src->age, 8/*BLOCK_FIELD_IS_BYREF*/);
-}
-
 /// 被__block修饰的age变量，此时转换为了一个结构体
 struct __Block_byref_age_1 {
   void *__isa;
@@ -22949,9 +22935,29 @@ static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
 static struct __main_block_desc_0 {
   size_t reserved;
   size_t Block_size;
+    
+  // 对block捕获的变量进行内存管理
   void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);
   void (*dispose)(struct __main_block_impl_0*);
+    
 } __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0), __main_block_copy_0, __main_block_dispose_0};
+
+/// copy函数
+/// 当block从栈区copy到堆区时，_Block_object_assign函数会对捕获变量进行类似retain操作
+/// 此处注意：如果捕获的是__block修饰的变量转为为的结构体，不管变量是不是强引用，此处都会对其转换的结构体进行类似retain操作
+///         如果捕获的是对象类型的auto变量，则会根据变量的修饰符，是否是强引用，来进行类似retain操作
+static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {
+    _Block_object_assign((void*)&dst->person, (void*)src->person, 8/*BLOCK_FIELD_IS_BYREF*/);
+    _Block_object_assign((void*)&dst->age, (void*)src->age, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+
+/// dispose函数
+/// 当block从堆区移除时，_Block_object_dispose函数会对捕获变量进行类似release操作
+static void __main_block_dispose_0(struct __main_block_impl_0*src) {
+    _Block_object_dispose((void*)src->person, 8/*BLOCK_FIELD_IS_BYREF*/);
+    _Block_object_dispose((void*)src->age, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+
 
 /// main.m执行内容
 int main(int argc, const char * argv[]) {
@@ -22990,7 +22996,7 @@ int main(int argc, const char * argv[]) {
             10 // age = 10
         };
         
-        // 构建结构体，捕获的是：变量转成的结构体的实例地址
+        // 构建结构体，捕获的是：变量转成的结构体地址
         DZRBlock block = (&__main_block_impl_0(
                                                __main_block_func_0,
                                                &__main_block_desc_0_DATA,
@@ -23008,6 +23014,19 @@ int main(int argc, const char * argv[]) {
          此时访问的‘age’，是age结构体内部的成员变量age
          */
         NSLog((NSString *)&__NSConstantStringImpl__var_folders_96_0vbtlxxx6nd01n2n42jqy4xc0000gn_T_main_981268_mi_1, (age.__forwarding->age));
+        
+        /**
+         问题：为什么__block转为的结构体(简称S)，访问自己的内部成员(简称V)，需要用‘__forwarding’在中间转一遍喃
+         
+         答：不管是数据类型的变量，还是对象类型的变量，他们被__block修饰后，都会被封装成一个结构体(S)，原本的值(V)是作为成员，储存在S中。
+            S之所以被block捕获，是因为他是auto类型的变量，一开始它是存储在栈区。
+            此时S的__forwarding指向的是它在栈区的内存地址。但是当block从栈区copy到堆区后，同时也会将S也copy到堆区，
+            此时我们能访问到的其实是堆区的block，此时block内部成员变量指向S地址，也是指向的堆区的S地址。
+            现在栈区和堆区都是一个S，如果修改了堆区V的值，但是又通过栈区的S进行访问，那就会弄错。
+            而不管是堆区还是栈区的S，其成员__forwarding都是指向的堆区，这样保证了访问的V都是堆区的，而不会是栈区的
+         
+            至于为什么栈区明明有一个S，还需要复制一个S到堆区，因为栈区是系统管理，随时都可能会被移除内存，所以需要移到堆区
+         */
     }
     return 0;
 }
