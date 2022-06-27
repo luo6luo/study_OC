@@ -26,9 +26,9 @@
 /* Begin PBXFileReference section */
 		CB1A37302861B4E4006EAAE4 /* block6 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = block6; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB1A37332861B4E4006EAAE4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		CB1A373A2861BD96006EAAE4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CB1A373C2861BDE0006EAAE4 /* DZRPerson.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DZRPerson.h; sourceTree = "<group>"; };
 		CB1A373D2861BDE0006EAAE4 /* DZRPerson.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DZRPerson.m; sourceTree = "<group>"; };
+		CBE1AD272865C56600022FC8 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 		CB1A37322861B4E4006EAAE4 /* block6 */ = {
 			isa = PBXGroup;
 			children = (
-				CB1A373A2861BD96006EAAE4 /* main.cpp */,
+				CBE1AD272865C56600022FC8 /* main.cpp */,
 				CB1A37332861B4E4006EAAE4 /* main.m */,
 				CB1A373C2861BDE0006EAAE4 /* DZRPerson.h */,
 				CB1A373D2861BDE0006EAAE4 /* DZRPerson.m */,

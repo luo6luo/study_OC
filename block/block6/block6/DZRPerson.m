@@ -9,4 +9,10 @@
 
 @implementation DZRPerson
 
+- (void)dealloc
+{
+    // 打印函数名
+    NSLog(@"%s", __func__);
+}
+
 @end
