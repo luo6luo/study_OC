@@ -15,6 +15,7 @@
 - [block对象类型的auto变量的捕获](./block/block5/block5) (**注意**：上面`block变量捕获`测试的是基础数据类型，此处单独说对象类型的auto变量)
 - [block中__block修饰符的本质](./block/block6/block6)
 - [block的循环引用](./block/block7/block7)
+- [block的总结](./block/block-总结/block-总结)
 
 ### 2、Runtime
 - [runtime-isa指针原理](./runtime/runtime1/runtime1)
