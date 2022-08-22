@@ -7,6 +7,8 @@
 //  类、方法本质
 
 #import <Foundation/Foundation.h>
+#import "Person.h"
+#import "Student.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -117,11 +119,12 @@ int main(int argc, const char * argv[]) {
          五、以 method_t 为例，查看其简化结构体
          struct method_t {
             struct big {
-                SEL name; // 函数名称
+                SEL name; // 选择器 - 函数名称，底层和char*类似
                 const char *types; // 编码，包含函数的参数类型
                 MethodListIMP imp; // 函数实现地址
             };
          }
+         IMP函数具体实现：typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
          
          
          总结：类开始加载时候，他的初始化信息(方法、属性、协议、成员变量)是存在 class_ro_t *ro 中，存放在 bits 中
@@ -129,6 +132,23 @@ int main(int argc, const char * argv[]) {
          */
         NSObject *objc = [[NSObject alloc] init];
         
+        /**
+         SEL的创建方法
+         1、@selector
+         2、NSSelectorFromString
+         3、sel_registerName
+         
+         打印结果：
+         2022-08-22 11:00:38.472571+0800 runtime2[58864:209755] person:test
+         2022-08-22 11:00:38.472890+0800 runtime2[58864:209755] student:test
+         2022-08-22 11:00:38.472954+0800 runtime2[58864:209755] SEL1:test SEL2:test
+         
+         总结：只要函数名称一样，他们的选择器就是一样的
+         */
+        Person *person = [[Person alloc] init];
+        SEL sel1 = NSSelectorFromString(@"test");
+        SEL sel2 = sel_registerName("test");
+        NSLog(@"SEL1:%s SEL2:%s", sel1, sel2);
     }
     return 0;
 }
