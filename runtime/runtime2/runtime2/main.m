@@ -4,7 +4,7 @@
 //
 //  Created by lg on 2022/8/17.
 //
-//  类、方法本质
+//  类、方法的底层结构认识
 
 #import <Foundation/Foundation.h>
 #import "Person.h"
@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
             }
          }
          
-         三、查看 class_rw_t 结构体简化，rw = readWrite 可读可写，它里面即存了初始的信息，又添加了分类的信息
+         三、查看 class_rw_t 结构体简化，rw = readWrite 可读可写，它里面即存了类的信息，又添加了该类的分类信息
          struct class_rw_t {
             uint32_t flags;
             uint16_t witness;
@@ -116,11 +116,15 @@ int main(int argc, const char * argv[]) {
             }
          }
          
+         *注意：以 method 为例，method_array_t 中存放 method_list_t，method_list_t 中存放的 method_t。
+               所以不管是 method_array_t 还是 method_list_t，他们最终存放的都是 method_t。
+               同理可得 property_t、protocol_t。
+         
          五、以 method_t 为例，查看其简化结构体
          struct method_t {
             struct big {
                 SEL name; // 选择器 - 函数名称，底层和char*类似
-                const char *types; // 编码，包含函数的参数类型
+                const char *types; // 包含函数的返回值、参数编码的字符串
                 MethodListIMP imp; // 函数实现地址
             };
          }
