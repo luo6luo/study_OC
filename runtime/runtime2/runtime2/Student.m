@@ -9,11 +9,6 @@
 
 @implementation Student
 
-+ (void)load
-{
-    NSLog(@"student:%s", @selector(test));
-}
-
 - (void)test
 {
     NSLog(@"test");

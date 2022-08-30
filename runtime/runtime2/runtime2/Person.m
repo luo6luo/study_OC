@@ -9,14 +9,14 @@
 
 @implementation Person
 
-+ (void)load
-{
-    NSLog(@"person:%s", @selector(test));
-}
-
 - (void)test
 {
     NSLog(@"test");
+}
+
+- (char *)types:(int)a with:(char *)b with:(float)c
+{
+    return "types";
 }
 
 @end

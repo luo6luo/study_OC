@@ -7,8 +7,14 @@
 //  类、方法的底层结构认识
 
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 #import "Person.h"
 #import "Student.h"
+
+void printC(char *type,char *c)
+{
+    NSLog(@"%s: %s\n",type, c);
+}
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -33,6 +39,11 @@ int main(int argc, const char * argv[]) {
                 bits.setData(newData);
             }
          }
+         
+         // objc_class 继承 objc_object
+         struct objc_object {
+             Class _Nonnull isa  OBJC_ISA_AVAILABILITY;
+         };
          
          // 查看 class_data_bits_t 结构体，bits & FAST_DATA_MASK = class_rw_t
          // 说明 bits 包含很多信息，和isa一样，&FAST_DATA_MASK 只是为了取其中存储的 class_rw_t 地址
@@ -124,7 +135,7 @@ int main(int argc, const char * argv[]) {
          struct method_t {
             struct big {
                 SEL name; // 选择器 - 函数名称，底层和char*类似
-                const char *types; // 包含函数的返回值、参数编码的字符串
+                const char *types; // 编码，包含函数的返回值类型、参数类型
                 MethodListIMP imp; // 函数实现地址
             };
          }
@@ -136,23 +147,109 @@ int main(int argc, const char * argv[]) {
          */
         NSObject *objc = [[NSObject alloc] init];
         
+        
+        // ----------------- method_t 具体内容分析 ---------------------
+        
         /**
+         一、SEL 分析
+         SEL 选择器，表示函数名称
+         
          SEL的创建方法
          1、@selector
          2、NSSelectorFromString
          3、sel_registerName
          
          打印结果：
-         2022-08-22 11:00:38.472571+0800 runtime2[58864:209755] person:test
-         2022-08-22 11:00:38.472890+0800 runtime2[58864:209755] student:test
-         2022-08-22 11:00:38.472954+0800 runtime2[58864:209755] SEL1:test SEL2:test
+         2022-08-30 11:03:33.285988+0800 runtime2[47237:156075] SEL1:test SEL2:test SEL3:test
+         2022-08-30 11:03:33.286288+0800 runtime2[47237:156075] SEL1:0x7ff81e1904c9 SEL2:0x7ff81e1904c9 SEL3:0x7ff81e1904c9
          
          总结：只要函数名称一样，他们的选择器就是一样的
          */
         Person *person = [[Person alloc] init];
         SEL sel1 = NSSelectorFromString(@"test");
         SEL sel2 = sel_registerName("test");
-        NSLog(@"SEL1:%s SEL2:%s", sel1, sel2);
+        SEL sel3 = @selector(test);
+        NSLog(@"SEL1:%s SEL2:%s SEL3:%s", sel1, sel2, sel3);
+        NSLog(@"SEL1:%p SEL2:%p SEL3:%p", sel1, sel2, sel3);
+        
+        /**
+         二、types 分析
+         types是一个字符串，包含函数的返回类型、参数类型的编码(Type Encoding)。
+         可以通过 @encode 将类型转换为对应的编码字符串，下面是对应的编码
+         
+         输出结果：
+         2022-08-29 18:40:21.877445+0800 runtime2[60403:799230] char: c
+         2022-08-29 18:40:21.877466+0800 runtime2[60403:799230] int: i
+         2022-08-29 18:40:21.877507+0800 runtime2[60403:799230] short: s
+         2022-08-29 18:40:21.877543+0800 runtime2[60403:799230] long: q
+         2022-08-29 18:40:21.877568+0800 runtime2[60403:799230] long long: q
+         2022-08-29 18:40:21.877589+0800 runtime2[60403:799230] unsigned char: C
+         2022-08-29 18:40:21.877608+0800 runtime2[60403:799230] unsigned int: I
+         2022-08-29 18:40:21.877640+0800 runtime2[60403:799230] unsigned short: S
+         2022-08-29 18:40:21.877668+0800 runtime2[60403:799230] unsigned long: Q
+         2022-08-29 18:40:21.877688+0800 runtime2[60403:799230] unsigned long long: Q
+         2022-08-29 18:40:21.877708+0800 runtime2[60403:799230] float: f
+         2022-08-29 18:40:21.877727+0800 runtime2[60403:799230] double: d
+         2022-08-29 18:40:21.877750+0800 runtime2[60403:799230] BOOL: c
+         2022-08-29 18:40:21.881269+0800 runtime2[60403:799230] void: v
+         2022-08-29 18:40:21.881302+0800 runtime2[60403:799230] id: @
+         2022-08-29 18:40:21.881324+0800 runtime2[60403:799230] Class: #
+         2022-08-29 18:40:21.881343+0800 runtime2[60403:799230] SEL: :
+         */
+        printC("char", @encode(char));
+        printC("int", @encode(int));
+        printC("short", @encode(short));
+        printC("long", @encode(long));
+        printC("long long", @encode(long long));
+        printC("unsigned char", @encode(unsigned char));
+        printC("unsigned int", @encode(unsigned int));
+        printC("unsigned short", @encode(unsigned short));
+        printC("unsigned long", @encode(unsigned long));
+        printC("unsigned long long", @encode(unsigned long long));
+        printC("float", @encode(float));
+        printC("double", @encode(double));
+        printC("BOOL", @encode(BOOL));
+        printC("void", @encode(void));
+        printC("id", @encode(id));
+        printC("Class", @encode(Class));
+        printC("SEL", @encode(SEL));
+        
+        /**
+         下面我们来分析下 types 在 method_t 中具体代表的意思
+         特别说明：每个方法都默认隐藏了连个参数 id self, SEL _cmd
+         
+         方法: - (void)test
+              - (void)test:(id)self _cmd:(SEL)_cmd
+         types: v16@0:8   =   v 16 @ 0 : 8
+         说明: 返回值     v = void
+              一共需要16个字节
+              隐藏参数一  @ = id，从第0个字节开始，id类型8个字节
+              隐藏参数二  : = SEL，从第8个字节开始，SEL类型8个字节，SEL类似char*，是个指针类型
+              
+         
+         方法: - (char *)types:(int)a with:(char *)b with:(float)c
+         types: *32@0:8i16*20f28  =  * 32 @0 :8 i16 *20 f28
+         说明: 返回值     * = char
+              一共需要32个字节
+              隐藏参数一  @ = id，从第0个字节开始，id类型8个字节
+              隐藏参数二  : = SEL，从第8个字节开始，SEL类型8个字节
+              参数三     i = int，从第8+8=16个字节开始，int类型4个字节
+              参数四     * = char，从第16+4=20个字节开始，char*类型8个字节
+              参数五     f = float，从第20+8=28个字节开始，float类型4个字节
+         */
+        
+        // 确认字节数
+        // har*:8 int:4  id:8  float:4  SEL:8
+        NSLog(@"char*:%lu  int:%lu  id:%lu  float:%lu  SEL:%lu", sizeof(char *), sizeof(int), sizeof(id), sizeof(float), sizeof(SEL));
+        
+        Class personClass = object_getClass(person);
+        Method method1 = class_getInstanceMethod(personClass, @selector(test));
+        struct objc_method_description *des1 = method_getDescription(method1);
+        NSLog(@"%s", des1->types);
+        
+        Method method2 = class_getInstanceMethod(personClass, @selector(types:with:with:));
+        struct objc_method_description *des2 = method_getDescription(method2);
+        NSLog(@"%s", des2->types);
     }
     return 0;
 }
