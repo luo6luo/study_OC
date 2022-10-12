@@ -596,6 +596,7 @@ mask_t cache_t::mask() const
 {
     uintptr_t maskAndBuckets = _bucketsAndMaybeMask.load(memory_order_relaxed);
     return maskAndBuckets >> maskShift;
+    
 }
 
 #elif CACHE_MASK_STORAGE == CACHE_MASK_STORAGE_LOW_4
